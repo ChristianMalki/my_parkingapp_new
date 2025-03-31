@@ -1,0 +1,53 @@
+{
+    "persons": [
+    {
+        "name": "Bruce Lee",
+        "personnummer": "xxxxxxxxxx"
+    },
+    {
+        "name": "Will Smith",
+        "personnummer":"1234567890"
+    }
+    ],
+    "vehicles": [
+        {
+          "registreringsnummer": "DGF04K",
+          "type": "Bil",
+          "ownerPersonnummer": "0987654321" 
+        },
+        {
+            "registreringsnummer": "JFJ05P",
+            "type": "MotorCykel",
+            "ownerPersonnummer": "0987654321" 
+
+        }
+    ],
+    "parkingSpaces": [
+        {
+            "id": 1,
+            "adress": "Gatan 1",
+            "prisPerTime": 10.0
+        },
+        {
+            "id": 2,
+            "adress": "Gatan 2",
+            "prisPerTime": 20.0
+
+        }
+    ],
+
+    "parkings": [
+        {
+            "fordon": "DGF04K",
+            "parkeringsplats": 1,
+            "starttid": "2025-02-03T08:00:00",
+            "sluttid": "2025-02-0310T10:00:00"
+        },
+        {
+            "fordon": "JFJ05P",
+            "parkeringsplats": 2,
+            "starttid": "2025-02-03T08:00:00",
+            "sluttid": null 
+        }
+    ]
+}
