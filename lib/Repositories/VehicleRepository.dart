@@ -10,7 +10,7 @@ class VehicleRepository{
 
   static VehicleRepository get instance => _instance;
 
-  final _vehicles = [];
+  final List <Vehicle> _vehicles = [];
 
   
   Vehicle create(Vehicle vehicle) {
@@ -20,7 +20,7 @@ class VehicleRepository{
 
   
   Vehicle getByRegnr(String regnr) {
-    return _vehicles.firstWhere((e) => e.regnr == regnr);
+    return _vehicles.firstWhere((e) => e.regNr == regnr);
   }
 
   
@@ -28,7 +28,7 @@ class VehicleRepository{
 
 
   Vehicle update(String regnr, Vehicle newVehicle) {
-    var index = _vehicles.indexWhere((e) => e.regnr == regnr);
+    var index = _vehicles.indexWhere((e) => e.regNr == regnr);
     if (index >= 0 && index < _vehicles.length) {
       _vehicles[index] = newVehicle;
       return newVehicle;
@@ -38,7 +38,7 @@ class VehicleRepository{
 
   
   Vehicle delete(String regnr) {
-    var index = _vehicles.indexWhere((e) => e.regnr == regnr);
+    var index = _vehicles.indexWhere((e) => e.regNr == regnr);
     if (index >= 0 && index < _vehicles.length) {
       return _vehicles.removeAt(index);
     }

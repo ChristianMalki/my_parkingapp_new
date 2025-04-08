@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:my_parkingapp_new/cli_operations/parkingspace_operations.dart';
 class ParkingspaceMenu {
-  static void prompt() {  while (true) {
+  static Future prompt()async {  while (true) {
     print('\nParking Space Management');
     print('1. Create Parking Space');
     print('2. List Parking Spaces');
@@ -15,16 +15,16 @@ class ParkingspaceMenu {
 
     switch (choice) {
       case '1':
-        ParkingSpaceOperations.create();
+      await  ParkingSpaceOperations.create();
         break;
       case '2':
-        ParkingSpaceOperations.list();
+      await  ParkingSpaceOperations.list();
         break;
       case '3':
-        ParkingSpaceOperations.update();
+     await   ParkingSpaceOperations.update();
         break;
       case '4':
-        ParkingSpaceOperations.delete();
+      await  ParkingSpaceOperations.delete();
         break;
       case '5':
         print('Exiting...');

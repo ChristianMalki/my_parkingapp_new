@@ -1,9 +1,9 @@
 // ignore: file_names
-class Parkingspace {
+class ParkingSpace {
   final String id;
   final String adress;
   
 
-  Parkingspace({required this.id, required this.adress});
+  ParkingSpace({required this.id, required this.adress});
 
 }

@@ -1,7 +1,8 @@
+import 'package:my_parkingapp_new/cli_operations/person_operations.dart';
 import 'package:my_parkingapp_new/utils/console.dart';
 
 class PersonMenu {
-  static prompt() {
+  static prompt() async {
     clearConsole();
     while (true) {
       print('Persons Menu');
@@ -16,16 +17,16 @@ class PersonMenu {
       switch (input) {
         case 1:
           print('Creating Person');
-          PersonsOperations.create();
+         await PersonsOperations.create();
         case 2:
           print('Listing all Person');
-          PersonsOperations.list();
+        await  PersonsOperations.list();
         case 3:
           print('Updating Person');
-          PersonsOperations.update();
+         await PersonsOperations.update();
         case 4:
           print('Deleting Person');
-          PersonsOperations.delete();
+        await  PersonsOperations.delete();
         case 5:
           return;
         default:
@@ -35,14 +36,4 @@ class PersonMenu {
     }
   }
 
-}
-
-class PersonsOperations {
-  static void create() {}
-  
-  static void list() {}
-  
-  static void update() {}
-  
-  static void delete() {}
 }

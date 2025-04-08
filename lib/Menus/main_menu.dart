@@ -26,13 +26,13 @@ class MainMenu {
       var input = choice();
       switch (input) {
         case 1:
-         ParkingspaceMenu.prompt();
+       await  ParkingspaceMenu.prompt();
         case 2:
        await ParkingMenu.prompt();
         case 3:
-       PersonMenu.prompt();
+     await  PersonMenu.prompt();
         case 4:
-        VehiclesMenu.prompt();
+       await VehiclesMenu.prompt();
         case 5:
         exit();
           return;

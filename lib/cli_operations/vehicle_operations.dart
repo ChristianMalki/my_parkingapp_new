@@ -13,7 +13,7 @@ class VehiclesOperations {
 
     var regnr = stdin.readLineSync();
 
-
+    print('Enter model');
     var model = stdin.readLineSync();
     if (Validator.isString(regnr)&& Validator.isString(model)) {
       Vehicle vehicle = Vehicle(regNr: regnr!, model: model!, id:'');
@@ -27,7 +27,7 @@ class VehiclesOperations {
   static list()  {
     List<Vehicle> allVehicles =  repository.getAll();
     for (int i = 0; i < allVehicles.length; i++) {
-      print('${i + 1}. ${allVehicles[i].regnr} - ${allVehicles[i].model}');
+      print('${i + 1}. ${allVehicles[i].regNr} - ${allVehicles[i].model}');
     }
   }
 
@@ -35,7 +35,7 @@ class VehiclesOperations {
     print('Pick an index to update: ');
     List<Vehicle> allVehicles = repository.getAll();
     for (int i = 0; i < allVehicles.length; i++) {
-      print('${i + 1}. ${allVehicles[i].regnr}');
+      print('${i + 1}. ${allVehicles[i].regNr}');
     }
 
     String? input = stdin.readLineSync();
@@ -66,7 +66,7 @@ class VehiclesOperations {
     print('Pick an index to delete: ');
     List<Vehicle> allVehicles = repository.getAll();
     for (int i = 0; i < allVehicles.length; i++) {
-      print('${i + 1}. ${allVehicles[i].regnr}');
+      print('${i + 1}. ${allVehicles[i].regNr}');
     }
 
     String? input = stdin.readLineSync();

@@ -2,19 +2,7 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
-VehicleRepository repo = VehicleRepository();
 
-class VehicleRepository {
-  getAll() {}
-  
-  create(vehicle) {}
-  
-  getById(String id) {}
-  
-  update(String id, Vehicle? vehicle) {}
-  
-  delete(String id) {}
-}
 
 Future<Response> postVehicleHandler(Request request) async {
   final data = await request.readAsString();

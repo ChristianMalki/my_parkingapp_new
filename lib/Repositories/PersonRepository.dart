@@ -24,11 +24,11 @@ class PersonRepository{
   }
 
   
-  List<Person> getAll() => List.from(_persons);
+  Future<List<Person>>getAll() async => List.from(_persons);
 
 
-  Person update(String personnummer, Person newPerson) {
-    var index = _persons.indexWhere((e) => e.personnummer == personnummer);
+  Person update(String id, Person newPerson) {
+    var index = _persons.indexWhere((e) => e.id == id);
     if (index >= 0 && index < _persons.length) {
       _persons[index] = newPerson;
       return newPerson;
@@ -37,8 +37,8 @@ class PersonRepository{
   }
 
   
-  Person delete(String personnummer) {
-    var index = _persons.indexWhere((e) => e.personnummer == personnummer);
+  Person delete(String id) {
+    var index = _persons.indexWhere((e) => e.id == id);
     if (index >= 0 && index < _persons.length) {
       return _persons.removeAt(index);
     }

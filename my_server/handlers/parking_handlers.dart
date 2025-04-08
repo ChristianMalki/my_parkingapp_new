@@ -2,19 +2,8 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
-ParkingRepository repo = ParkingRepository();
+import 'vehicle_handlers.dart';
 
-class ParkingRepository {
-  create(entity) {}
-  
-  getAll() {}
-  
-  getById(String id) {}
-  
-  update(String id, entity) {}
-  
-  delete(String id) {}
-}
 
 Future<Response> postParkingHandler(Request request) async {
   final data = await request.readAsString();

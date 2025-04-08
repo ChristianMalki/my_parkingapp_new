@@ -3,7 +3,7 @@ import 'package:my_parkingapp_new/cli_operations/vehicle_operations.dart';
 import 'package:my_parkingapp_new/utils/console.dart';
 
 class VehiclesMenu {
-  static prompt() {
+  static prompt() async {
     clearConsole();
     while (true) {
       print('Vehicles Menu');
@@ -18,16 +18,16 @@ class VehiclesMenu {
       switch (input) {
         case 1:
           print('Creating Vehicle');
-          VehiclesOperations.create();
+        await  VehiclesOperations.create();
         case 2:
           print('Listing all Vehicles');
-          VehiclesOperations.list();
+        await  VehiclesOperations.list();
         case 3:
           print('Updating Vehicle');
-          VehiclesOperations.update();
+        await  VehiclesOperations.update();
         case 4:
           print('Deleting Vehicle');
-          VehiclesOperations.delete();
+         await VehiclesOperations.delete();
         case 5:
           return;
         default:

@@ -14,15 +14,13 @@ class ParkingOperations {
   
   
   
-   print
    
-   ('Enter adress');
 
   
 
     var regnr = stdin.readLineSync();
     
-
+print ('Enter adress');
    
   
 

@@ -1,4 +1,5 @@
 import 'package:my_parkingapp_new/cli_operations/parkingspace_operations.dart';
+import 'package:my_parkingapp_new/models/parkingspace.dart';
 
 class Parkingspacerepository {
   List<ParkingSpace> _ParkingSpace = [];
@@ -17,20 +18,16 @@ class Parkingspacerepository {
   void update (ParkingSpace parkingSpace, ParkingSpace newParkingspace) {
     int index = _ParkingSpace.indexWhere((space) => space.id == parkingSpace.id);
     if (index != -1) {
-      _ParkingSpace[index] = parkingSpace;
+      _ParkingSpace[index] = newParkingspace;
     }
   }
-  void delete(int id) {
+  void delete(String id) {
     _ParkingSpace.removeWhere((space) => space.id == id);
   }
 
-  void create(ParkingSpace parkingSpace) {}
-}
-
-class ParkingSpace {
-  ParkingSpace(id, String s);
-
-  get id => null;
+  void create(ParkingSpace parkingSpace) {
+    _ParkingSpace.add(parkingSpace);
+  }
 }
 
 

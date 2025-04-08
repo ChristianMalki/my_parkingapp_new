@@ -6,15 +6,14 @@ class Vehicle extends Identifyable {
   final String regNr;
   @override
   final String id;
+  final String model;
 
 
-  Vehicle({required this.regNr, required this.id, required String model});
+  Vehicle({required this.regNr, required this.id, required this.model});
 
   get registreringsnummer => null;
 
-  String? get regnr => null;
 
-  get model => null;
 
   @override
   String toString() {
