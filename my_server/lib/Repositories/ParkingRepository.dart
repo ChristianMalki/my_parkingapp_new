@@ -1,36 +1,25 @@
+import 'package:my_server/Repositories/FileRepository.dart';
+
 import 'package:shared/shared.dart';
 
-class ParkingRepository {
-  List<Parking> parkeringar = [];
+class ParkingRepository extends FileRepository<Parking> {
+  ParkingRepository() : super('items.json');
 
-  ParkingRepository? get instance => null;
-
-  Future add(Parking parking) async {
-    parkeringar.add(parking);
+  @override
+  Parking fromJson(Map<String, dynamic> json) {
+    // TODO: implement fromJson
+    return Parking.fromJson(json);
   }
 
-  Future<List<Parking>> getAll() async {
-    return parkeringar;
+  @override
+  String idFromType(Parking parking) {
+    // TODO: implement idFromType
+    return parking.id;
   }
 
-  Future update(Parking updatedParking) async {
-    var index =
-        parkeringar.indexWhere((parking) => parking.id == updatedParking.id);
-    if (index != -1) {
-      parkeringar[index] = updatedParking;
-    }
-  }
-
-  Future delete(String id) async {
-    var index = parkeringar.indexWhere((parking) => parking.id == id);
-    if (index != -1) {
-      parkeringar.removeAt(index);
-    } else {
-      throw RangeError.index(index, parkeringar);
-    }
-  }
-
-  Future create(Parking parking) async {
-    parkeringar.add(parking);
+  @override
+  Map<String, dynamic> toJson(Parking parking) {
+    // TODO: implement toJson
+    return parking.toJson();
   }
 }

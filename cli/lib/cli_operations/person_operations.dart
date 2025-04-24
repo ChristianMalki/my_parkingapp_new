@@ -5,7 +5,7 @@ import 'package:shared/shared.dart';
 import 'package:my_parkingapp_new/utils/validator.dart';
 import 'package:uuid/uuid.dart';
 
-PersonRepository repository = PersonRepository.instance;
+PersonRepository repository = PersonRepository();
 
 class PersonsOperations {
   static Future create() async {
@@ -51,7 +51,7 @@ class PersonsOperations {
 
       if (Validator.isString(name)&& Validator.isString(personnummer)) {
         Person newPerson = Person(id: person.id, name: name!, personnummer: personnummer!);
-        await repository.update(allPersons[index].id, newPerson);
+        await repository.update( newPerson);
         print('Person updated');
       } else {
         print('Invalid input');

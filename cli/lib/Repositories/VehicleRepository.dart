@@ -1,47 +1,72 @@
+import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:shared/shared.dart';
 
-class VehicleRepository{
-  // singleton
+class Vehiclerepository {
+  Vehiclerepository? get instance => null;
 
-  VehicleRepository._internal();
+  Future add(Vehicle vehicle) async {
+    // send item serialized as json over http to server at localhost:8080
+    final uri = Uri.parse("http://localhost:8080/vehicle");
 
-  static final VehicleRepository _instance = VehicleRepository._internal();
+    Response response = await http.post(uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(vehicle.toJson()));
 
-  static VehicleRepository get instance => _instance;
+    final json = jsonDecode(response.body);
 
-  final List <Vehicle> _vehicles = [];
-
-  
-  Future<Vehicle> create(Vehicle vehicle) async {
-    _vehicles.add(vehicle);
-    return vehicle;
+    return Vehicle.fromJson(json);
   }
 
-  
-  Future<Vehicle> getByRegnr(String regnr) async{
-    return _vehicles.firstWhere((e) => e.regNr == regnr);
+  Future<List<Vehicle>> getAll() async {
+    final uri = Uri.parse("http://localhost:8080/vehicle");
+    final response = await http.get(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    final json = jsonDecode(response.body);
+
+    return (json as List).map((item) => Vehicle.fromJson(item)).toList();
   }
 
-  
-  Future<List<Vehicle>> getAll() async => List.from(_vehicles);
+  Future update(Vehicle updateVehicle) async {
+    // send item serialized as json over http to server at localhost:8080
+    final uri =
+        Uri.parse("http://localhost:8080/vehicle/${updateVehicle.id}");
 
+    Response response = await http.put(uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(updateVehicle.toJson()));
 
-  Future<Vehicle> update(String regnr, Vehicle newVehicle) async {
-    var index = _vehicles.indexWhere((e) => e.regNr == regnr);
-    if (index >= 0 && index < _vehicles.length) {
-      _vehicles[index] = newVehicle;
-      return newVehicle;
-    }
-    throw RangeError.index(index, _vehicles);
+    final json = jsonDecode(response.body);
+
+    return Vehicle.fromJson(json);
   }
 
-  
-  Future<Vehicle> delete(String regnr) async {
-    var index = _vehicles.indexWhere((e) => e.regNr == regnr);
-    if (index >= 0 && index < _vehicles.length) {
-      return _vehicles.removeAt(index);
-    }
-    throw RangeError.index(index, _vehicles);
+  Future delete(String id) async {
+    final uri = Uri.parse("http://localhost:8080/vehicle/${id}");
+
+    Response response = await http.delete(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+    );
+  }
+
+  Future create(Vehicle vehicle) async {
+    // send item serialized as json over http to server at localhost:8080
+    final uri = Uri.parse("http://localhost:8080/vehicle");
+
+    Response response = await http.post(uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(vehicle.toJson()));
+
+    final json = jsonDecode(response.body);
+
+    return Vehicle.fromJson(json);
   }
 }
+
+

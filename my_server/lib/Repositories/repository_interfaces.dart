@@ -1,7 +1,14 @@
 abstract interface class RepositoryInterface<T> {
-  T create(T vehicle);
-  List<T> getAll();
-  T? getById(int regnr);
-  T update(int regnr, T vehicle);
-  T delete(int regnr);
+
+  Future<T> create(T item);
+
+  Future<List<T>> getAll();
+
+  Future<T?> getById(String id);
+
+  Future<T> update(String id, T item);
+
+  Future<T> delete(String id);
+
 }
+ 

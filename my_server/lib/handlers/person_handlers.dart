@@ -1,28 +1,29 @@
 import 'dart:convert';
-import 'package:my_server/Repositories/ParkingRepository.dart';
+
+import 'package:my_server/Repositories/PersonRepository.dart';
 import 'package:shared/shared.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+ 
+var repo = PersonRepository();
 
-var repo = ParkingRepository();
-
-Future<Response> postParkingHandler(Request request) async {
+Future<Response> postPersonHandler(Request request) async {
   final data = await request.readAsString();
   final json = jsonDecode(data);
-  var parking = Parking.fromJson(json);
+  var person = Person.fromJson(json);
 
-  await repo.create(parking);
+  await repo.create(person);
 
   return Response.ok(
-    jsonEncode(parking.toJson()),
+    jsonEncode(person.toJson()),
     headers: {'Content-Type': 'application/json'},
   );
 }
 
-Future<Response> getParkingsHandler(Request request) async {
-  final parkings = await repo.getAll();
+Future<Response> getPersonsHandler(Request request) async {
+  final persons = await repo.getAll();
 
-  final payload = parkings.map((e) => e.toJson()).toList();
+  final payload = persons.map((e) => e.toJson()).toList();
 
   return Response.ok(
     jsonEncode(payload),
@@ -30,16 +31,16 @@ Future<Response> getParkingsHandler(Request request) async {
   );
 }
 
-Future<Response> getParkingHandler(Request request) async {
+Future<Response> getPersonHandler(Request request) async {
   String? id = request.params["id"];
 
   if (id != null) {
-    var parkings = await repo.getAll();
+    var persons = await repo.getAll();
 
-    for (var parking in parkings) {
-      if (parking.id == id) {
+    for (var person in persons) {
+      if (person.id == id) {
         return Response.ok(
-          jsonEncode(parking.toJson()),
+          jsonEncode(person.toJson()),
           headers: {'Content-Type': 'application/json'},
         );
       }
@@ -55,18 +56,18 @@ Future<Response> getParkingHandler(Request request) async {
   return Response.badRequest();
 }
 
-Future<Response> updateParkingHandler(Request request) async {
+Future<Response> updatePersonHandler(Request request) async {
   String? id = request.params["id"];
 
   if (id != null) {
     final data = await request.readAsString();
     final json = jsonDecode(data);
-    Parking? parking = Parking.fromJson(json);
+    Person? person = Person.fromJson(json);
 
-    await repo.update(id,parking);
+    await repo.update(person.id,person);
 
     return Response.ok(
-      jsonEncode(parking.toJson()),
+      jsonEncode(person.toJson()),
       headers: {'Content-Type': 'application/json'},
     );
   }
@@ -75,7 +76,7 @@ Future<Response> updateParkingHandler(Request request) async {
   return Response.badRequest();
 }
 
-Future<Response> deleteParkingHandler(Request request) async {
+Future<Response> deletePersonHandler(Request request) async {
   String? id = request.params["id"];
 
   if (id != null) {
@@ -88,7 +89,7 @@ Future<Response> deleteParkingHandler(Request request) async {
       );
     } catch (e) {
       return Response.notFound(
-        'Parking with id $id not found',
+        'Person with name $id not found',
         headers: {'Content-Type': 'application/json'},
       );
     }

@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:my_parkingapp_new/Repositories/VehicleRepository.dart';
 import 'package:shared/shared.dart';
 import 'package:my_parkingapp_new/utils/validator.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
-VehicleRepository repository = VehicleRepository.instance;
+Vehiclerepository repository = Vehiclerepository();
 
 class VehiclesOperations {
   static Future create() async {
@@ -16,7 +18,7 @@ class VehiclesOperations {
     print('Enter model');
     var model = stdin.readLineSync();
     if (Validator.isString(regnr)&& Validator.isString(model)) {
-      Vehicle vehicle = Vehicle(regNr: regnr!, model: model!, id:'');
+      Vehicle vehicle = Vehicle(regNr: regnr!, model: model!, id:Uuid().v4());
       await repository.create(vehicle);
       print('Vehicle created');
     } else {
@@ -52,7 +54,7 @@ class VehiclesOperations {
 
       if (Validator.isString(regnr)&& Validator.isString(model)) {
         Vehicle newVehicle = Vehicle(regNr: regnr!, model: model!, id: vehicle.id);
-        await repository.update(allVehicles[index].regNr, newVehicle);
+        await repository.update( newVehicle);
         print('Vehicle updated');
       } else {
         print('Invalid input');
@@ -73,7 +75,7 @@ class VehiclesOperations {
 
     if (Validator.isIndex(input, allVehicles)) {
       int index = int.parse(input!) - 1;
-      await repository.delete(allVehicles[index].regNr);
+      await repository.delete(allVehicles[index].id);
       print('Vehicle deleted');
     } else {
       print('Invalid input');
