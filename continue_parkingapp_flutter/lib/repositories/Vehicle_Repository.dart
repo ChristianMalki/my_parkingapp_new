@@ -53,7 +53,7 @@ class VehicleRepository{
   }
 
   @override
-  Future<Vehicle> delete(String id) async {
+  Future delete(String id) async {
     final uri = Uri.parse("http://10.0.2.2:8080/vehicle/${id}");
 
     Response response = await http.delete(
@@ -61,9 +61,7 @@ class VehicleRepository{
       headers: {'Content-Type': 'application/json'},
     );
 
-    final json = jsonDecode(response.body);
-
-    return Vehicle.fromJson(json);
+   
   }
 
   @override
