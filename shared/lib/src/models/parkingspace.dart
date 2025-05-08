@@ -1,4 +1,6 @@
 // ignore: file_names
+import 'package:shared/src/models/parkingspace.dart';
+
 class ParkingSpace {
   final String id;
   final String adress;
@@ -18,5 +20,7 @@ class ParkingSpace {
       'adress': adress,
     };
   }
+
+ 
 
 }

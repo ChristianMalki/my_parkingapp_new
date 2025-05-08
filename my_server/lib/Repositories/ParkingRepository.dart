@@ -3,7 +3,7 @@ import 'package:my_server/Repositories/FileRepository.dart';
 import 'package:shared/shared.dart';
 
 class ParkingRepository extends FileRepository<Parking> {
-  ParkingRepository() : super('items.json');
+  ParkingRepository() : super('parkings.json');
 
   @override
   Parking fromJson(Map<String, dynamic> json) {

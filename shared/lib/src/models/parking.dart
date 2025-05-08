@@ -1,3 +1,5 @@
+
+
 class Parking {
   final String regnr;
   final String adress;
@@ -19,5 +21,9 @@ class Parking {
       'id': id,
     };
   }
+
+ 
+
+  
 
 }

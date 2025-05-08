@@ -1,0 +1,2 @@
+/Users/christianmalki/Documents/my_parkingapp_new/continue_parkingapp_flutter/android/app/.cxx/Debug/5l575h66/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/christianmalki/Documents/my_parkingapp_new/continue_parkingapp_flutter/android/app/.cxx/Debug/5l575h66/arm64-v8a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,28 @@
+{
+  "buildFiles": [
+    "/Users/christianmalki/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/christianmalki/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/christianmalki/Documents/my_parkingapp_new/continue_parkingapp_flutter/android/app/.cxx/Debug/5l575h66/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/christianmalki/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/christianmalki/Documents/my_parkingapp_new/continue_parkingapp_flutter/android/app/.cxx/Debug/5l575h66/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {},
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/christianmalki/Library/Android/sdk/ndk/26.3.11579264/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/christianmalki/Library/Android/sdk/ndk/26.3.11579264/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": []
+}

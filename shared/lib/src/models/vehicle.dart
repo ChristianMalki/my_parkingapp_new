@@ -1,3 +1,5 @@
+import 'package:shared/src/models/vehicle.dart';
+
 class Vehicle {
   final String regNr;
   final String id;
@@ -22,4 +24,6 @@ class Vehicle {
       'model': model,
     };
   }
+
+  
 }
