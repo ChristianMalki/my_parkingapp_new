@@ -1,9 +1,11 @@
-import 'dart:ffi';
 
 
+
+import 'package:continue_parkingapp_flutter/blocs/vehicle_bloc.dart';
 import 'package:continue_parkingapp_flutter/repositories/Vehicle_Repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:shared/shared.dart';
 import 'package:uuid/uuid.dart';
@@ -19,41 +21,44 @@ class VehicleView extends StatefulWidget {
 }
 
 class _VehicleViewState extends State<VehicleView> {
-  Future future = VehicleRepository().getAll();
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: future,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
+      body: BlocBuilder<VehicleBloc,VehicleState>(
+      
+        builder: (context, vehiclestate) {
+
+          return switch (vehiclestate) {
+            // TODO: Handle this case.
+            VehicleInitial() =>  Center(child: CircularProgressIndicator()),
+            // TODO: Handle this case.
+            VehicleLoading() =>  Center(child: CircularProgressIndicator()),
+            // TODO: Handle this case.
+            VehicleLoaded(:final vehicles) =>  ListView.builder(
+              itemCount: vehicles.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(snapshot.data![index].id),
-                  subtitle: Text(snapshot.data![index].regNr),
+                  title: Text(vehicles[index].regNr),
+                  subtitle: Text(vehicles[index].model),
                   trailing: IconButton(
                     onPressed: () async {
-                      await VehicleRepository().delete(snapshot.data![index].id);
-                      setState(() {
-                        future = VehicleRepository().getAll();
-                      });
+                    context.read<VehicleBloc>().add(DeleteVehicle(vehicle: vehicles[index]));
+              
                     },
                     icon: Icon(Icons.delete),
                   ),
                 );
               },
-            );
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
+            ),
+            // TODO: Handle this case.
+            VehicleError() => Center(child: Text("Error: ${vehiclestate.message}")),
+          };
+      
         },
       ),
       floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
         onPressed: () async {
           Vehicle? created = await showDialog<Vehicle>(
             context: context,
@@ -97,15 +102,11 @@ class _VehicleViewState extends State<VehicleView> {
             },
           );
           if (created != null) {
+            
             // dispatch create item event
-            await VehicleRepository().create(created);
-            setState(() {
-              future = VehicleRepository().getAll();
-            });
-          }
-        },
-        child: Icon(Icons.add),
-      ),
-    );
+            context.read<VehicleBloc>().add(CreateVehicle(vehicle:created));
+             
+        };      
+        }));
   }
-}
+  }

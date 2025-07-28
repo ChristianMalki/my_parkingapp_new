@@ -1,99 +1,175 @@
-import 'package:continue_parkingapp_flutter/views/home_view.dart';
-import 'package:continue_parkingapp_flutter/views/parking_view.dart';
-import 'package:continue_parkingapp_flutter/views/vehicle_view.dart';
-import 'package:flutter/foundation.dart';
+import 'package:continue_parkingapp_flutter/blocs/parking_bloc.dart' as parkingBloc;
+import 'package:continue_parkingapp_flutter/blocs/parking_bloc.dart';
+
+import 'package:continue_parkingapp_flutter/blocs/parkingspace_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:continue_parkingapp_flutter/blocs/auth_bloc.dart';
+import 'package:continue_parkingapp_flutter/blocs/vehicle_bloc.dart';
+import 'package:continue_parkingapp_flutter/repositories/ParkingSpace_Repository.dart';
+import 'package:continue_parkingapp_flutter/repositories/Parking_Repository.dart';
+import 'package:continue_parkingapp_flutter/repositories/Vehicle_Repository.dart';
+import 'package:continue_parkingapp_flutter/views/parking_view.dart';
+import 'package:continue_parkingapp_flutter/views/parkingspace_view.dart';
+import 'package:continue_parkingapp_flutter/views/vehicle_view.dart';
+import 'package:shared/shared.dart';
+
+// Observer for debugging state changes
+class SimpleBlocObserver extends BlocObserver {
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+    print('${bloc.runtimeType} $change');
+  }
+}
 
 void main() {
-  runApp(const MyApp());
+  Bloc.observer = SimpleBlocObserver();
+  runApp(
+    BlocProvider(
+      create: (context) => AuthBloc(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AuthBloc>().state;
+
+    Widget homeWidget;
+
+    if (state is AuthPending) {
+      homeWidget = const Center(child: CircularProgressIndicator());
+    } else if (state is AuthSuccess) {
+      homeWidget = const SignedInView();
+    } else if (state is AuthSignedOut || state is AuthInitial) {
+      homeWidget = const SignedOutView();
+    } else if (state is AutFail) {
+      homeWidget = Center(child: Text(state.error));
+    } else {
+      homeWidget = const Center(child: Text("Unknown State"));
+    }
+
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Bloc Examples',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
+        useMaterial3: true,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: homeWidget,
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  final ValueNotifier<int> _index = ValueNotifier<int>(1);
-
-  final views = [HomeView(), ParkingView(), VehicleView()];
+class SignedOutView extends StatelessWidget {
+  const SignedOutView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Provider, bloc, streams & events
-
-    // watch for state changes on Counter
-
-    return ValueListenableBuilder(
-      valueListenable: _index,
-      builder: (context, value, _) {
-        return Scaffold(
-          body: Center(
-            // Center is a layout widget. It takes a single child and positions it
-            // in the middle of the parent.
-            child: views[value],
-          ),
-
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: value,
-            onTap: (index) {
-              // index is the index of the clicked navbar item
-              _index.value = index;
-            },
-            items: [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.shelves),
-                label: 'Parkings',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag),
-                label: 'Vehicles',
-              ),
-            ],  
-          ),
-        );
-      },
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            context.read<AuthBloc>().add(AuthLogin(name: "Christian"));
+          },
+          child: const Text("Login"),
+        ),
+      ),
     );
   }
-  
+}
+
+class SignedInView extends StatelessWidget {
+  const SignedInView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              ParkingBloc(repository: ParkingRepository())..add(parkingBloc.LoadParking()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              VehicleBloc(repository: VehicleRepository())..add(LoadVehicle()),
+        ),
+        BlocProvider(
+          create: (context) => ParkingSpaceBloc(
+              repository: ParkingSpaceRepository())..add(LoadParkingSpace() as ParkingSpaceEvent),
+        ),
+      ],
+      child: const LandingPage(),
+    );
+  }
+}
+
+class LandingPage extends StatefulWidget {
+  const LandingPage({super.key});
+
+  @override
+  State<LandingPage> createState() => _LandingPageState();
+}
+
+class _LandingPageState extends State<LandingPage> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _views = const [
+    ParkingView(),
+    VehicleView(),
+    LogoutView(),
+  ];
+
+  final List<BottomNavigationBarItem> _bottomItems = const [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.local_parking),
+      label: "Parking",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.car_rental),
+      label: "Vehicle",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.logout),
+      label: "Logout",
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _views[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: _bottomItems,
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+    );
+  }
+}
+
+class LogoutView extends StatelessWidget {
+  const LogoutView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            context.read<AuthBloc>().logout();
+          },
+          child: const Text("Logout"),
+        ),
+      ),
+    );
+  }
 }

@@ -1,49 +1,40 @@
-
-
-
-import 'package:continue_parkingapp_flutter/blocs/parking_bloc.dart';
-import 'package:continue_parkingapp_flutter/repositories/parking_Repository.dart';
+import 'package:continue_parkingapp_flutter/blocs/parkingspace_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:shared/shared.dart';
 import 'package:uuid/uuid.dart';
 
-
-
-
-class ParkingView extends StatefulWidget {
-  const ParkingView({super.key});
+class ParkingSpaceView extends StatefulWidget {
+  const ParkingSpaceView({super.key});
 
   @override
-  State<ParkingView> createState() => _ParkingViewState();
+  State<ParkingSpaceView> createState() => _ParkingSpaceViewState();
 }
 
-class _ParkingViewState extends State<ParkingView> {
+class _ParkingSpaceViewState extends State<ParkingSpaceView> {
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<ParkingBloc,ParkingState>(
+      body: BlocBuilder<ParkingSpaceBloc,ParkingSpaceState>(
       
-        builder: (context, parkingstate) {
+        builder: (context, parkingspacestate) {
 
-          return switch (parkingstate) {
+          return switch (parkingspacestate) {
             // TODO: Handle this case.
-            ParkingInitial() =>  Center(child: CircularProgressIndicator()),
+            ParkingSpaceInitial() =>  Center(child: CircularProgressIndicator()),
             // TODO: Handle this case.
-            ParkingLoading() =>  Center(child: CircularProgressIndicator()),
+            ParkingSpaceLoading() =>  Center(child: CircularProgressIndicator()),
             // TODO: Handle this case.
-            ParkingLoaded(:final parking) =>  ListView.builder(
-              itemCount: parking.length,
+            ParkingSpaceLoaded(:final parkingSpace) =>  ListView.builder(
+              itemCount: parkingSpace.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(parking[index].regnr),
-                  subtitle: Text(parking[index].adress),
+                  title: Text(parkingSpace[index].id),
+                  subtitle: Text(parkingSpace[index].adress),
                   trailing: IconButton(
                     onPressed: () async {
-                    context.read<ParkingBloc>().add(DeleteParking(parking: parking[index]));
+                    context.read<ParkingSpaceBloc>().add(DeleteParkingSpace(parkingSpace: parkingSpace[index]));
               
                     },
                     icon: Icon(Icons.delete),
@@ -52,7 +43,7 @@ class _ParkingViewState extends State<ParkingView> {
               },
             ),
             // TODO: Handle this case.
-            ParkingError() => Center(child: Text("Error: ${parkingstate.message}")),
+            ParkingSpaceError() => Center(child: Text("Error: ${parkingspacestate.message}")),
           };
       
         },
@@ -60,20 +51,20 @@ class _ParkingViewState extends State<ParkingView> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () async {
-          Parking? created = await showDialog<Parking>(
+          ParkingSpace? created = await showDialog<ParkingSpace>(
             context: context,
             builder: (context) {
-              String regnr = "";
+              String id = "";
                String adress = "";
 
               return AlertDialog(
-                title: Text('Create new parking'),
+                title: Text('Create new parkingspace'),
                 content: Column(
                   children: [
                     TextField(
-                      decoration: InputDecoration(labelText: 'regnr'),
+                      decoration: InputDecoration(labelText: 'id'),
                       onChanged: (value) {
-                        regnr = value;
+                        id = value;
                       },
                     ), TextField(
                       decoration: InputDecoration(labelText: 'adress'),
@@ -92,7 +83,7 @@ class _ParkingViewState extends State<ParkingView> {
 
                   TextButton(
                     onPressed: () {
-                   Navigator.pop(context, Parking(regnr: regnr, adress: adress, id:  Uuid().v4()));
+                   Navigator.pop(context, ParkingSpace( adress: adress, id:  Uuid().v4()));
 
                     },
 
@@ -105,7 +96,7 @@ class _ParkingViewState extends State<ParkingView> {
           if (created != null) {
             
             // dispatch create item event
-            context.read<ParkingBloc>().add(CreateParking(parking:created));
+            context.read<ParkingSpaceBloc>().add(CreateParkingSpace(parkingSpace:created));
              
         };      
         }));

@@ -6,7 +6,15 @@ import 'package:shared/shared.dart';
 
 
 
-class ParkingSpaceRepository {}
+class ParkingSpaceRepository {
+  update(String id, ParkingSpace parkingspace) {}
+
+  create(ParkingSpace newParkingSpace) {}
+
+  delete(String id) {}
+
+  getAll() {}
+}
 
   @override
   Future<ParkingSpace> getById(String id) async {

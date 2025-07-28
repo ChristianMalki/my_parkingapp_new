@@ -61,7 +61,6 @@ class VehicleRepository{
       headers: {'Content-Type': 'application/json'},
     );
 
-   
   }
 
   @override
