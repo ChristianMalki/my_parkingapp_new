@@ -1,18 +1,21 @@
 import 'package:continue_parkingapp_flutter/blocs/parking_bloc.dart' as parkingBloc;
 import 'package:continue_parkingapp_flutter/blocs/parking_bloc.dart';
-
 import 'package:continue_parkingapp_flutter/blocs/parkingspace_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:continue_parkingapp_flutter/blocs/auth_bloc.dart';
 import 'package:continue_parkingapp_flutter/blocs/vehicle_bloc.dart';
 import 'package:continue_parkingapp_flutter/repositories/ParkingSpace_Repository.dart';
-import 'package:continue_parkingapp_flutter/repositories/Parking_Repository.dart';
 import 'package:continue_parkingapp_flutter/repositories/Vehicle_Repository.dart';
 import 'package:continue_parkingapp_flutter/views/parking_view.dart';
-import 'package:continue_parkingapp_flutter/views/parkingspace_view.dart';
 import 'package:continue_parkingapp_flutter/views/vehicle_view.dart';
-import 'package:shared/shared.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'repositories/Parking_Repository.dart';
+
+// ...
+
+
 
 // Observer for debugging state changes
 class SimpleBlocObserver extends BlocObserver {
@@ -23,13 +26,35 @@ class SimpleBlocObserver extends BlocObserver {
   }
 }
 
-void main() {
+void main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   Bloc.observer = SimpleBlocObserver();
   runApp(
-    BlocProvider(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              ParkingBloc(repository: ParkingRepository())..add(parkingBloc.LoadParking() as parkingBloc.ParkingEvent),
+        ),
+        BlocProvider(
+          create: (context) =>
+              VehicleBloc(repository: VehicleRepository())..add(LoadVehicle()),
+        ),
+        BlocProvider(
+          create: (context) => ParkingSpaceBloc(
+              repository: ParkingSpaceRepository())..add(LoadParkingSpace() as ParkingSpaceEvent),
+        ),
+         BlocProvider(
       create: (context) => AuthBloc(),
       child: const MyApp(),
     ),
+      ],
+      child:const MyApp(),
+    )
+   
   );
 }
 
@@ -45,10 +70,10 @@ class MyApp extends StatelessWidget {
     if (state is AuthPending) {
       homeWidget = const Center(child: CircularProgressIndicator());
     } else if (state is AuthSuccess) {
+      homeWidget = const LandingPage();
+    } else if (state is AuthSignedIn || state is AuthInitial) {
       homeWidget = const SignedInView();
-    } else if (state is AuthSignedOut || state is AuthInitial) {
-      homeWidget = const SignedOutView();
-    } else if (state is AutFail) {
+    } else if (state is AuthFailure) {
       homeWidget = Center(child: Text(state.error));
     } else {
       homeWidget = const Center(child: Text("Unknown State"));
@@ -65,45 +90,29 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class SignedOutView extends StatelessWidget {
+/* class SignedOutView extends StatelessWidget {
   const SignedOutView({super.key});
 
-  @override
+
+  
+  } */
+
+
+class SignedInView extends StatelessWidget {
+  const SignedInView({super.key});
+
+ 
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            context.read<AuthBloc>().add(AuthLogin(name: "Christian"));
+            context.read<AuthBloc>().add(AuthLogin(name: "Christian", email: 'test123@test.com', password: 'test123'));
           },
           child: const Text("Login"),
         ),
       ),
-    );
-  }
-}
-
-class SignedInView extends StatelessWidget {
-  const SignedInView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-              ParkingBloc(repository: ParkingRepository())..add(parkingBloc.LoadParking()),
-        ),
-        BlocProvider(
-          create: (context) =>
-              VehicleBloc(repository: VehicleRepository())..add(LoadVehicle()),
-        ),
-        BlocProvider(
-          create: (context) => ParkingSpaceBloc(
-              repository: ParkingSpaceRepository())..add(LoadParkingSpace() as ParkingSpaceEvent),
-        ),
-      ],
-      child: const LandingPage(),
     );
   }
 }

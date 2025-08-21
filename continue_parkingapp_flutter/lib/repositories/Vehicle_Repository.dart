@@ -1,79 +1,86 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared/shared.dart';
+import 'dart:io' show Platform;
 
-
-
-class VehicleRepository{
-
-
-  @override
-  Future<Vehicle> getById(String id) async {
-    final uri = Uri.parse("http://10.0.2.2:8080/vehicle/${id}");
-
-    Response response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return Vehicle.fromJson(json);
+class VehicleRepository {
+  String get baseUrl {
+    if (kIsWeb) return 'http://localhost:8080';
+    if (Platform.isAndroid || Platform.isIOS) return 'http://10.0.2.2:8080';
+    return 'http://localhost:8080';
   }
 
-  @override
-  Future<Vehicle> create(Vehicle vehicle) async {
-    // send Vehicle serialized as json over http to server at 10.0.2.2:8080
-    final uri = Uri.parse("http://10.0.2.2:8080/vehicle");
+  User? get credential => FirebaseAuth.instance.currentUser;
 
-    Response response = await http.post(uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(vehicle.toJson()));
+  List<Vehicle> vehicles = [];
 
-    final json = jsonDecode(response.body);
+  Future<Vehicle> addVehicle(Vehicle vehicle) async {
+    await FirebaseFirestore.instance
+        .collection('persons')
+        .doc(credential?.uid)
+        .collection('vehicles')
+          .doc(vehicle.id)
+          .set(vehicle.toJson());
 
-    return Vehicle.fromJson(json);
+    return vehicle;
   }
 
-  @override
   Future<List<Vehicle>> getAll() async {
+    if (credential == null) {
+      throw Exception("User not logged in");
+    }
+    final snapshot = await FirebaseFirestore.instance
+        .collection('persons')
+        .doc(credential?.uid)
+        .collection('vehicles')
+        .get();
+    final List<Vehicle> vehicles = snapshot.docs
+        .map((doc) => Vehicle.fromJson(doc.data()))
+        .toList();
 
-
-    final uri = Uri.parse("http://10.0.2.2:8080/vehicle");
-    final response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return (json as List).map((vehicle) => Vehicle.fromJson(vehicle)).toList();
+    return vehicles;
   }
 
-  @override
-  Future delete(String id) async {
-    final uri = Uri.parse("http://10.0.2.2:8080/vehicle/${id}");
+  Future<Vehicle?> getById(String id) async {
+    final document =
+        await FirebaseFirestore.instance
+            .collection('persons')
+            .doc(credential?.uid)
+            .collection('vehicles')
+            .doc(id)
+            .get();
 
-    Response response = await http.delete(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
+    if (document.exists) {
+      final json = document.data();
+      if (json != null) {
+        return Vehicle.fromJson(json);
+      }
+    } else {
+      throw Exception('Vehicle not found');
+    }
+    return null;
   }
 
-  @override
-  Future<Vehicle> update(String id, Vehicle vehicle) async {
-    // send Vehicle serialized as json over http to server at 10.0.2.2:8080
-    final uri = Uri.parse("http://10.0.2.2:8080/vehicle/${id}");
+  Future<Vehicle> update(Vehicle vehicle) async {
+      await FirebaseFirestore.instance
+          .collection('persons')
+          .doc(credential?.uid)
+          .collection('vehicles')
+          .doc(vehicle.id)
+          .update(vehicle.toJson());
+    
+    return vehicle;
+  }
 
-    Response response = await http.put(uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(vehicle.toJson()));
-
-    final json = jsonDecode(response.body);
-
-    return Vehicle.fromJson(json);
+  Future<Vehicle?> delete(String id) async {
+    
+    await FirebaseFirestore.instance
+        .collection('persons')
+        .doc(credential?.uid)
+        .collection('vehicles')
+        .doc(id)
+        .delete();
+    return null; 
   }
 }

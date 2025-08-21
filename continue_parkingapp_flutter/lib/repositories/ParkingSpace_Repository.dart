@@ -1,88 +1,81 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
+import 'dart:io' show Platform;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared/shared.dart';
 
-
-
 class ParkingSpaceRepository {
-  update(String id, ParkingSpace parkingspace) {}
-
-  create(ParkingSpace newParkingSpace) {}
-
-  delete(String id) {}
-
-  getAll() {}
-}
-
-  @override
-  Future<ParkingSpace> getById(String id) async {
-    final uri = Uri.parse("http://10.0.2.2:8080/parkingspace/${id}");
-
-    Response response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return ParkingSpace.fromJson(json);
+  String get baseUrl {
+    if (kIsWeb) return 'http://localhost:8080';
+    if (Platform.isAndroid || Platform.isIOS) return 'http://10.0.2.2:8080';
+    return 'http://localhost:8080';
   }
 
-  @override
-  Future<ParkingSpace> create(ParkingSpace parkingspace) async {
-    // send parkingspace serialized as json over http to server at 10.0.2.2:8080
-    final uri = Uri.parse("http://10.0.2.2:8080/parkingspace");
+  List<ParkingSpace> parkingSpaces = [];
 
-    Response response = await http.post(uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(parkingspace.toJson()));
-
-    final json = jsonDecode(response.body);
-
-    return ParkingSpace.fromJson(json);
+  Future<ParkingSpace> addParkingSpace(ParkingSpace parkingspace) async {
+    final credential = FirebaseAuth.instance.currentUser;
+    if (credential == null) {
+      throw Exception("User not logged in");
+    }
+    await FirebaseFirestore.instance
+        .collection('parking_spaces')
+        .add(parkingspace.toJson());
+    return parkingspace;
   }
 
-  @override
   Future<List<ParkingSpace>> getAll() async {
-
-
-    final uri = Uri.parse("http://10.0.2.2:8080/parkingspace");
-    final response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return (json as List).map((parkingspace) => ParkingSpace.fromJson(parkingspace)).toList();
+    
+    final snapshot =
+        await FirebaseFirestore.instance.collection('parking_spaces').get();
+    final List<ParkingSpace> parkingSpaces =
+        snapshot.docs.map((doc) => ParkingSpace.fromJson(doc.data())).toList();
+    return parkingSpaces;
   }
 
-  @override
-  Future<ParkingSpace> delete(String id) async {
-    final uri = Uri.parse("http://10.0.2.2:8080/parkingsspace/${id}");
-
-    Response response = await http.delete(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return ParkingSpace.fromJson(json);
+  Future<ParkingSpace?> getById(String spaceId) async {
+    
+    // get parking space by ID from Firestore
+    final credential = FirebaseAuth.instance.currentUser;
+    if (credential == null) {
+      throw Exception("User not logged in");
+    }
+    final doc =
+        await FirebaseFirestore.instance
+            .collection('parking_spaces')
+            .doc(spaceId)
+            .get();
+    if (!doc.exists) {
+      return null;
+    }
+    return ParkingSpace.fromJson(doc.data()!);
   }
 
-  @override
-  Future<ParkingSpace> update(String id, ParkingSpace parkingspace) async {
-    // send parking serialized as json over http to server at 10.0.2.2:8080
-    final uri = Uri.parse("http://10.0.2.2:8080/parkingsspace/${id}");
-
-    Response response = await http.put(uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(parkingspace.toJson()));
-
-    final json = jsonDecode(response.body);
-
-    return ParkingSpace.fromJson(json);
+  Future<ParkingSpace> update(ParkingSpace parkingspace) async {
+    
+    // update parking space in Firestore
+    final credential = FirebaseAuth.instance.currentUser;
+    if (credential == null) {
+      throw Exception("User not logged in");
+    }
+    await FirebaseFirestore.instance
+        .collection('parking_spaces')
+        .doc(parkingspace.id)
+        .update(parkingspace.toJson());
+    return parkingspace;
   }
+
+  Future<ParkingSpace?> delete(String id) async {
+    
+    // delete parking space from Firestore
+    final credential = FirebaseAuth.instance.currentUser;
+    if (credential == null) {
+      throw Exception("User not logged in");
+    }
+    await FirebaseFirestore.instance
+        .collection('parking_spaces')
+        .doc(id)
+        .delete();
+    return null;
+  }
+}

@@ -2,8 +2,9 @@ class Person {
   final String name;
   final String personnummer;
   final String id;
+  final String? email;
 
-  Person({required this.name, required this.personnummer, required this.id});
+  Person({required this.name, required this.personnummer, required this.id, this.email});
  
   
 
@@ -12,6 +13,7 @@ class Person {
       name: json['name'] as String,
       personnummer: json['personnummer'] as String,
       id: json['id'] as String,
+      email: json['email'] as String?,
     );
   }
   Map<String, dynamic> toJson() {
@@ -19,6 +21,7 @@ class Person {
       'name': name,
       'personnummer': personnummer,
       'id': id,
+      'email': email,
     };
   }
  

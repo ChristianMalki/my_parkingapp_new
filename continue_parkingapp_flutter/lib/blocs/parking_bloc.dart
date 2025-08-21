@@ -1,7 +1,9 @@
-import 'package:continue_parkingapp_flutter/repositories/Parking_Repository.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared/shared.dart';
+
+import '../repositories/Parking_Repository.dart';
 
 
 
@@ -20,12 +22,12 @@ class ParkingBloc extends Bloc<ParkingEvent, ParkingState> {
         emit(ParkingLoaded(parking: parking));
 
         case UpdateParking(parking: final parking):
-        await repository.update(parking.id, parking);
+        await repository.update( parking);
         final parkings = await repository.getAll();
         emit (ParkingLoaded(parking: parkings));
 
         case CreateParking(parking: final parking):
-        await repository.create( parking);
+        await repository.addParking( parking);
         final parkings = await repository.getAll();
         emit (ParkingLoaded(parking: parkings));
 

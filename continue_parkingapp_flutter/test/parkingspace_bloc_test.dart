@@ -2,7 +2,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:continue_parkingapp_flutter/blocs/parkingspace_bloc.dart';
 import 'package:continue_parkingapp_flutter/repositories/ParkingSpace_Repository.dart';
-import 'package:continue_parkingapp_flutter/repositories/ParkingSpace_Repository.dart' as parkingSpaceRepository;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared/shared.dart';
@@ -29,9 +29,9 @@ void main() {
       blocTest<ParkingSpaceBloc, ParkingSpaceState>(
         'should emit [ParkingSpaceLoaded] with new parkingspace when CreateParkingSpace is added',
         setUp: () {
-          when(() => parkingSpaceRepository.create(any()))
+          when(() => parkingspaceRepository.addParkingSpace(any()))
               .thenAnswer((_) async => newParkingSpace);
-               when(() => parkingSpaceRepository.getAll())
+               when(() => parkingspaceRepository.getAll())
               .thenAnswer((_) async => [newParkingSpace]);
         },
         build: () => ParkingSpaceBloc(repository: parkingspaceRepository),
@@ -41,7 +41,7 @@ void main() {
           ParkingSpaceLoaded(parkingSpace: [newParkingSpace]),
         ],
         verify: (_) {
-          verify(() => parkingSpaceRepository.create(newParkingSpace)).called(1);
+          verify(() => parkingspaceRepository.addParkingSpace(newParkingSpace)).called(1);
         },
       );
     });
@@ -53,9 +53,9 @@ void main() {
       blocTest<ParkingSpaceBloc, ParkingSpaceState>(
         'should emit [ParkingSpaceLoaded] with new parkingspace when newParkingSpace is updated',
         setUp: () {
-          when(() => parkingSpaceRepository.update(any(),any()))
+          when(() => parkingspaceRepository.update(any()))
               .thenAnswer((_) async => newParkingSpace);
-               when(() => parkingSpaceRepository.getAll())
+               when(() => parkingspaceRepository.getAll())
               .thenAnswer((_) async => [newParkingSpace]);
       
         },
@@ -66,8 +66,8 @@ void main() {
           ParkingSpaceLoaded(parkingSpace: [newParkingSpace]),
         ],
         verify: (_) {
-          verify(() => parkingSpaceRepository.update(newParkingSpace.id, newParkingSpace)).called(1);
-          verify(() => parkingSpaceRepository.getAll()).called(1);
+          verify(() => parkingspaceRepository.update( newParkingSpace)).called(1);
+          verify(() => parkingspaceRepository.getAll()).called(1);
         },
       );
     
@@ -77,7 +77,7 @@ void main() {
       blocTest<ParkingSpaceBloc, ParkingSpaceState>(
          'emits [ParkingSpaceError] when update fails',
          setUp: () {
-          when(() => parkingSpaceRepository.update(any(), any()))
+          when(() => parkingspaceRepository.update(any()))
               .thenThrow(Exception('Failed to update parkingspace'));
         },
         build: buildBloc,
@@ -96,9 +96,9 @@ void main() {
       blocTest<ParkingSpaceBloc, ParkingSpaceState>(
         'should emit [ParkingSpaceLoaded] with new parkingspace when DeleteParkingSpace is removed',
         setUp: () {
-          when(() => parkingSpaceRepository.delete(any()))
+          when(() => parkingspaceRepository.delete(any()))
               .thenAnswer((_) async => newParkingSpace);
-               when(() => parkingSpaceRepository.getAll())
+               when(() => parkingspaceRepository.getAll())
               .thenAnswer((_) async => [newParkingSpace]);
         },
         build: () => ParkingSpaceBloc(repository: parkingspaceRepository),
@@ -108,7 +108,7 @@ void main() {
           ParkingSpaceLoaded(parkingSpace: [newParkingSpace]),
         ],
         verify: (_) {
-          verify(() => parkingSpaceRepository.delete(newParkingSpace.id)).called(1);
+          verify(() => parkingspaceRepository.delete(newParkingSpace.id)).called(1);
         },
       );
     });

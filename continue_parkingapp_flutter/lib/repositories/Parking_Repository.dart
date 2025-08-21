@@ -1,82 +1,80 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
+import 'dart:io' show Platform;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared/shared.dart';
 
-
-
 class ParkingRepository {
-
-  @override
-  Future<Parking> getById(String id) async {
-    final uri = Uri.parse("http://10.0.2.2:8080/parkings/${id}");
-
-    Response response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return Parking.fromJson(json);
+  String get baseUrl {
+    if (kIsWeb) return 'http://localhost:8080';
+    if (Platform.isAndroid || Platform.isIOS) return 'http://10.0.2.2:8080';
+    return 'http://localhost:8080';
   }
 
-  @override
-  Future<Parking> create(Parking parking) async {
-    // send parking serialized as json over http to server at 10.0.2.2:8080
-    final uri = Uri.parse("http://10.0.2.2:8080/parkings");
+    User? get credential => FirebaseAuth.instance.currentUser;
 
-    Response response = await http.post(uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(parking.toJson()));
+  List<Parking> parkings = [];
 
-    final json = jsonDecode(response.body);
-
-    return Parking.fromJson(json);
+  Future<Parking> addParking(Parking parking) async {
+    await FirebaseFirestore.instance
+    .collection('persons')
+    .doc(credential?.uid)
+    .collection('parkings')
+    .doc(parking.id)
+    .set(parking.toJson());
+    return parking;
   }
 
-  @override
   Future<List<Parking>> getAll() async {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('persons')
+          .doc(credential?.uid)
+          .collection('parkings')
+          .get();
+          final List<Parking> parkings = snapshot.docs
+          .map((doc) => Parking.fromJson(doc.data()))
+          .toList();
 
-
-    final uri = Uri.parse("http://10.0.2.2:8080/parkings");
-    final response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return (json as List).map((parking) => Parking.fromJson(parking)).toList();
+    return parkings;
+    }
+  
+  
+  Future<Parking?> getById(String vehicleId) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('persons')
+        .doc(credential?.uid)
+        .collection('parkings')
+        .doc(vehicleId)
+        .get();
+    if (snapshot.exists) {
+      final json = snapshot.data();
+      if (json != null) {
+      return Parking.fromJson(json);
+    } else {
+      throw Exception('Parking not found');   
+    }
+    } else {
+      return null;
+    }
   }
 
-  
-    
-  
-
-  @override
-  Future delete(String id) async {
-    final uri = Uri.parse("http://10.0.2.2:8080/parkings/${id}");
-
-    Response response = await http.delete(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
+  Future<Parking> update(Parking parking) async {
+    await FirebaseFirestore.instance
+        .collection('persons')
+        .doc(credential?.uid)
+        .collection('parkings')
+        .doc(parking.id)
+        .update(parking.toJson());
+    return parking;
   }
-
-  @override
-  Future<Parking> update(String id, Parking parking) async {
-    // send parking serialized as json over http to server at 10.0.2.2:8080
-    final uri = Uri.parse("http://10.0.2.2:8080/parkings/${id}");
-
-    Response response = await http.put(uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(parking.toJson()));
-
-    final json = jsonDecode(response.body);
-
-    return Parking.fromJson(json);
+  
+  Future<Parking?> delete(String id) async {
+    await FirebaseFirestore.instance
+        .collection('persons')
+        .doc(credential?.uid)
+        .collection('parkings')
+        .doc(id)
+        .delete();
+    return null; 
   }
 }

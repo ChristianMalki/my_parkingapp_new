@@ -19,12 +19,12 @@ class VehicleBloc extends Bloc<VehicleEvent, VehicleState> {
         emit(VehicleLoaded(vehicles:vehicles));
 
         case UpdateVehicle(vehicle: final vehicle):
-        await repository.update(vehicle.id, vehicle);
+        await repository.update(vehicle );
         final vehicles = await repository.getAll();
         emit (VehicleLoaded(vehicles: vehicles));
 
         case CreateVehicle(vehicle: final vehicle):
-        await repository.create(vehicle);
+        await repository.addVehicle(vehicle);
         final vehicles = await repository.getAll();
         emit (VehicleLoaded(vehicles: vehicles));
 

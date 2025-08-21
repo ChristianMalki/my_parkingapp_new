@@ -28,7 +28,7 @@ void main() {
       blocTest<VehicleBloc, VehicleState>(
         'should emit [VehicleLoaded] with new vehicle when CreateVehicle is added',
         setUp: () {
-          when(() => vehicleRepository.create(any()))
+          when(() => vehicleRepository.addVehicle(any()))
               .thenAnswer((_) async => newVehicle);
                when(() => vehicleRepository.getAll())
               .thenAnswer((_) async => [newVehicle]);
@@ -40,7 +40,7 @@ void main() {
           VehicleLoaded(vehicles: [newVehicle]),
         ],
         verify: (_) {
-          verify(() => vehicleRepository.create(newVehicle)).called(1);
+          verify(() => vehicleRepository.addVehicle(newVehicle)).called(1);
         },
       );
     });
@@ -52,7 +52,7 @@ void main() {
       blocTest<VehicleBloc, VehicleState>(
         'should emit [VehicleLoaded] with new vehicle when UpdateVehicle is updated',
         setUp: () {
-          when(() => vehicleRepository.update(any(),any()))
+          when(() => vehicleRepository.update(any()))
               .thenAnswer((_) async => newVehicle);
                when(() => vehicleRepository.getAll())
               .thenAnswer((_) async => [newVehicle]);
@@ -65,7 +65,7 @@ void main() {
           VehicleLoaded(vehicles: [newVehicle]),
         ],
         verify: (_) {
-          verify(() => vehicleRepository.update(newVehicle.id, newVehicle)).called(1);
+          verify(() => vehicleRepository.update( newVehicle)).called(1);
           verify(() => vehicleRepository.getAll()).called(1);
         },
       );
@@ -76,7 +76,7 @@ void main() {
       blocTest<VehicleBloc, VehicleState>(
          'emits [VehicleError] when update fails',
          setUp: () {
-          when(() => vehicleRepository.update(any(), any()))
+          when(() => vehicleRepository.update(any(),))
               .thenThrow(Exception('Failed to update vehicle'));
         },
         build: buildBloc,

@@ -1,6 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:continue_parkingapp_flutter/blocs/parking_bloc.dart';
 import 'package:continue_parkingapp_flutter/repositories/Parking_Repository.dart';
+
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared/shared.dart';
@@ -28,7 +30,7 @@ void main() {
       blocTest<ParkingBloc, ParkingState>(
         'should emit [ParkingLoaded] with new parking when CreateParking is added',
         setUp: () {
-          when(() => parkingRepository.create(any()))
+          when(() => parkingRepository.addParking(any()))
               .thenAnswer((_) async => newParking);
                when(() => parkingRepository.getAll())
               .thenAnswer((_) async => [newParking]);
@@ -40,7 +42,7 @@ void main() {
           ParkingLoaded(parking: [newParking]),
         ],
         verify: (_) {
-          verify(() => parkingRepository.create(newParking)).called(1);
+          verify(() => parkingRepository.addParking(newParking)).called(1);
         },
       );
     });
@@ -52,7 +54,7 @@ void main() {
       blocTest<ParkingBloc, ParkingState>(
         'should emit [ParkingLoaded] with new parking when newParking is updated',
         setUp: () {
-          when(() => parkingRepository.update(any(),any()))
+          when(() => parkingRepository.update(any()))
               .thenAnswer((_) async => newParking);
                when(() => parkingRepository.getAll())
               .thenAnswer((_) async => [newParking]);
@@ -65,7 +67,7 @@ void main() {
           ParkingLoaded(parking: [newParking]),
         ],
         verify: (_) {
-          verify(() => parkingRepository.update(newParking.id, newParking)).called(1);
+          verify(() => parkingRepository.update( newParking)).called(1);
           verify(() => parkingRepository.getAll()).called(1);
         },
       );
@@ -76,7 +78,7 @@ void main() {
       blocTest<ParkingBloc, ParkingState>(
          'emits [ParkingError] when update fails',
          setUp: () {
-          when(() => parkingRepository.update(any(), any()))
+          when(() => parkingRepository.update(any()))
               .thenThrow(Exception('Failed to update parking'));
         },
         build: buildBloc,

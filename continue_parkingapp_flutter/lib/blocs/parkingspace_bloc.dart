@@ -17,16 +17,16 @@ class ParkingSpaceBloc extends Bloc<ParkingSpaceEvent, ParkingSpaceState> {
     switch (event) {
       case LoadParkingSpace():
         emit(ParkingSpaceLoading());
-        final parkingSpaces = await getAll();
+        final parkingSpaces = await repository.getAll();
         emit(ParkingSpaceLoaded(parkingSpace: parkingSpaces));
 
       case UpdateParkingSpace(parkingspace: final parkingspace):
-        await repository.update(parkingspace.id, parkingspace);
+        await repository.update( parkingspace);
         final parkingSpaces = await repository.getAll();
         emit(ParkingSpaceLoaded(parkingSpace: parkingSpaces));
 
       case CreateParkingSpace(parkingSpace: final newParkingSpace):
-        await repository.create(newParkingSpace);
+        await repository.addParkingSpace(newParkingSpace);
         final parkingSpaces = await repository.getAll();
         emit(ParkingSpaceLoaded(parkingSpace: parkingSpaces));
 
