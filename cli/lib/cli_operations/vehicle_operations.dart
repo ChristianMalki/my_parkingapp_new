@@ -5,7 +5,7 @@ import 'package:my_parkingapp_new/Repositories/VehicleRepository.dart';
 import 'package:shared/shared.dart';
 import 'package:my_parkingapp_new/utils/validator.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
+
 
 Vehiclerepository repository = Vehiclerepository();
 

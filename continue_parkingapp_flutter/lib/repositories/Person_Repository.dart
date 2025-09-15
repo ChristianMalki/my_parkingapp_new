@@ -1,80 +1,73 @@
-import 'dart:convert';
-import 'dart:ffi';
-
+import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared/shared.dart';
 
-
-
 class PersonRepository {
+  /*String get baseUrl {
+    if (kIsWeb) return 'http://localhost:8080';
+    if (Platform.isAndroid || Platform.isIOS) return 'http://10.0.2.2:8080';
+    return 'http://localhost:8080';
+  }*/
 
-  @override
-  Future<Person> getById(String id) async {
-    final uri = Uri.parse("http://10.0.2.2:8080/person/${id}");
+  List<Person> persons = [];
 
-    Response response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return Person.fromJson(json);
+  Future<Person> addPerson(Person person) async {
+    await FirebaseFirestore.instance
+        .collection('persons')
+        .doc(person.id)
+        .set(person.toJson());
+    return person;
   }
 
-  @override
-  Future<void> create(Person user) async {
-    
-    await FirebaseFirestore.instance.collection("users").doc(user.id).set({
-                "uid": user.id,
-                "email": user.email,
-                "username":user.name,
-              });
-
-  }
-
-  @override
   Future<List<Person>> getAll() async {
-
-
-    final uri = Uri.parse("http://10.0.2.2:8080/person");
-    final response = await http.get(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    final json = jsonDecode(response.body);
-
-    return (json as List).map((person) => Person.fromJson(person)).toList();
+    final snapshot = await FirebaseFirestore.instance.collection('persons').get();
+    final List<Person> persons = snapshot.docs
+        .map((doc) => Person.fromJson(doc.data()))
+        .toList();
+    return persons;
   }
 
-  @override
-  Future<Person> delete(String id) async {
-    final uri = Uri.parse("http://10.0.2.2:8080/person/${id}");
+  Future<Person?> getById(String uId) async {
 
-    Response response = await http.delete(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-    );
+    final document =
+        await FirebaseFirestore.instance
+            .collection('persons')
+            .doc(uId)
+            .get();
 
-    final json = jsonDecode(response.body);
-
-    return Person.fromJson(json);
+    if (document.exists) {
+      final json = document.data();
+      if (json != null) {
+        return Person.fromJson(json);
+      }
+    } else {
+      throw Exception('Person with id $uId not found');
+    }
+    return null;
   }
 
-  @override
-  Future<Person> update(String id, Person person) async {
-    // send parking serialized as json over http to server at 10.0.2.2:8080
-    final uri = Uri.parse("http://10.0.2.2:8080/person/${id}");
+  Future<Person> update(Person person) async {
 
-    Response response = await http.put(uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(person.toJson()));
-
-    final json = jsonDecode(response.body);
-
-    return Person.fromJson(json);
+    await FirebaseFirestore.instance
+        .collection('persons')
+        .doc(person.id)
+        .update(person.toJson());
+    return person;
   }
+
+  Future<Person?> delete(String? id) async {
+
+    final personToDelete = await getById(id!);
+    if (personToDelete != null) {
+      await FirebaseFirestore.instance
+          .collection('persons')
+          .doc(id)
+          .delete();
+      return personToDelete;
+    }
+    return null;
+  }
+
+  Future<void> create(Person person) async {}
 }

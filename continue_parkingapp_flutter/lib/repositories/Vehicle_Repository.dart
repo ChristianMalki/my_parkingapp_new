@@ -5,11 +5,11 @@ import 'package:shared/shared.dart';
 import 'dart:io' show Platform;
 
 class VehicleRepository {
-  String get baseUrl {
+  /*String get baseUrl {
     if (kIsWeb) return 'http://localhost:8080';
     if (Platform.isAndroid || Platform.isIOS) return 'http://10.0.2.2:8080';
     return 'http://localhost:8080';
-  }
+  }*/
 
   User? get credential => FirebaseAuth.instance.currentUser;
 

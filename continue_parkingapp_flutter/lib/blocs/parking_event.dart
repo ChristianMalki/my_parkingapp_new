@@ -2,7 +2,7 @@ part of 'parking_bloc.dart';
 
 
 
-sealed class  ParkingEvent {}
+abstract class  ParkingEvent {}
 
 class LoadParking extends ParkingEvent{}
 

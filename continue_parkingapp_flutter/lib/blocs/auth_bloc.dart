@@ -147,8 +147,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   register(
       {required String username,
       required String password,
-      required String email}) {
-    add(AuthRegister(password: password, username: username, email: email, personnummer: '', id: null));
+      required String email,
+      required String personnummer}) {
+    add(AuthRegister(password: password, username: username, email: email, personnummer: personnummer));
   }
 
   logout() {
